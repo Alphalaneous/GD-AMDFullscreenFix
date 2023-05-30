@@ -94,10 +94,10 @@ DWORD WINAPI thread_func(void* hModule) {
 
     std::this_thread::sleep_for(std::chrono::milliseconds(random));
 
-    AllocConsole();
+    /*AllocConsole();
     freopen("CONIN$", "r", stdin);
     freopen("CONOUT$", "w", stdout);
-    freopen("CONOUT$", "w", stderr);
+    freopen("CONOUT$", "w", stderr);*/
 
     auto base = reinterpret_cast<uintptr_t>(GetModuleHandle(0));
    
