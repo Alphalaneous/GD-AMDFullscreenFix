@@ -16,15 +16,37 @@ bool newWindowProcSet = false;
 int width;
 int height;
 
+bool isFullscreen(HWND windowHandle)
+{
+    MONITORINFO monitorInfo = { 0 };
+    monitorInfo.cbSize = sizeof(MONITORINFO);
+    GetMonitorInfo(MonitorFromWindow(windowHandle, MONITOR_DEFAULTTOPRIMARY), &monitorInfo);
+
+    RECT windowRect;
+    GetWindowRect(windowHandle, &windowRect);
+
+    return windowRect.left == monitorInfo.rcMonitor.left
+        && windowRect.right == monitorInfo.rcMonitor.right
+        && windowRect.top == monitorInfo.rcMonitor.top
+        && windowRect.bottom == monitorInfo.rcMonitor.bottom;
+}
+
 LRESULT CALLBACK nWindowProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam) {
+
+    cocos2d::CCEGLView* ccEGLView = cocos2d::CCEGLView::sharedOpenGLView();
+
+    gd::GameManager* manager = gd::GameManager::sharedState();
+
+
+
     switch (msg) {
 
     case WM_SETFOCUS: {
-        cocos2d::CCEGLView* ccEGLView = cocos2d::CCEGLView::sharedOpenGLView();
 
-        if (ccEGLView->isFullscreen()) {
+        if (isFullscreen(hwnd)) {
             SetWindowPos(hwnd, HWND_TOPMOST, 0, 0, width, height, SWP_DRAWFRAME | SWP_FRAMECHANGED);
         }
+
         break;
     }
     case WM_KILLFOCUS:
@@ -36,9 +58,7 @@ LRESULT CALLBACK nWindowProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam) 
             height = rect.bottom - rect.top;
         }
 
-        cocos2d::CCEGLView* ccEGLView = cocos2d::CCEGLView::sharedOpenGLView();
-
-        if (ccEGLView->isFullscreen()) {
+        if (isFullscreen(hwnd)) {
             SetWindowPos(hwnd, HWND_BOTTOM, 0, 0, 1280, 720, SWP_NOACTIVATE);
         }
 
@@ -74,10 +94,10 @@ DWORD WINAPI thread_func(void* hModule) {
 
     std::this_thread::sleep_for(std::chrono::milliseconds(random));
 
-    /*AllocConsole();
+    AllocConsole();
     freopen("CONIN$", "r", stdin);
     freopen("CONOUT$", "w", stdout);
-    freopen("CONOUT$", "w", stderr);*/
+    freopen("CONOUT$", "w", stderr);
 
     auto base = reinterpret_cast<uintptr_t>(GetModuleHandle(0));
    
