@@ -20,8 +20,11 @@ LRESULT CALLBACK nWindowProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam) 
     switch (msg) {
 
     case WM_SETFOCUS: {
+        cocos2d::CCEGLView* ccEGLView = cocos2d::CCEGLView::sharedOpenGLView();
 
-        SetWindowPos(hwnd, HWND_TOPMOST, 0, 0, width, height, SWP_DRAWFRAME | SWP_FRAMECHANGED);
+        if (ccEGLView->isFullscreen()) {
+            SetWindowPos(hwnd, HWND_TOPMOST, 0, 0, width, height, SWP_DRAWFRAME | SWP_FRAMECHANGED);
+        }
         break;
     }
     case WM_KILLFOCUS:
